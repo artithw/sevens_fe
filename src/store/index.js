@@ -3,7 +3,7 @@ import axiosClient from "../axios";
 
 const tempChecklists = [
   {
-    id: 1,
+    id: 100,
     title: "TheCodeholic YouTube channel content",
     slug: "thecodeholic-youtube-channel-content",
     status: "draft",
@@ -105,9 +105,9 @@ const tempChecklists = [
     created_at: "2021-12-20 18:00:00",
     updated_at: "2021-12-20 18:00:00",
     expire_date: "2021-12-31 18:00:00",
+    questions: []
   },
   {
-    id: 2,
     id: 3,
     title: "Vue 3",
     slug: "vue-3",
@@ -117,9 +117,9 @@ const tempChecklists = [
     created_at: "2021-12-21 17:00:00",
     updated_at: "2021-12-21 17:00:00",
     expire_date: "2021-12-31 00:00:00",
+    questions: []
   },
   {
-    id: 3,
     id: 4,
     title: "Tailwind 3",
     slug: "tailwind-3",
@@ -128,7 +128,7 @@ const tempChecklists = [
     description: `A utility-first CSS framework packed with classes like <code>flex</code>, <code>pt-4</code>, <code>text-center</code> and <code>rotate-90</code> that can be composed to build any design, directly in your markup.`,
     created_at: "2021-12-21 14:00:00",
     updated_at: "2021-12-21 14:00:00",
-
+    questions: []
   }
 ]
 const store =  createStore({
@@ -137,7 +137,8 @@ const store =  createStore({
             data: {},
             token: sessionStorage.getItem("TOKEN")
         },
-        checklists: [...tempChecklists]
+        checklists: [...tempChecklists],
+        questionTypes: ["text", "select", "radio", "checkbox", "textarea"],
 
     },
     getters: {},

@@ -18,8 +18,8 @@
             </label>
             <div class="mt-1 flex items-center">
               <img
-                v-if="model.image_url"
-                :src="model.image_url"
+                v-if="model.image"
+                :src="model.image"
                 :alt="model.title"
                 class="w-64 h-48 object-cover"
               />
@@ -127,6 +127,53 @@
           <!--/ Status -->
         </div>
         <!--/ Survey Fields -->
+    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+          <h3 class="text-2xl font-semibold flex items-center justify-between">
+            Questions
+
+            <!-- Add new question -->
+            <button
+              type="button"
+              @click="addQuestion()"
+              class="flex items-center text-sm py-1 px-4 rounded-sm text-white bg-gray-600 hover:bg-gray-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              Add Question
+            </button>
+            <!--/ Add new question -->
+          </h3>
+          <div v-if="!model.questions.length" class="text-center text-gray-600">
+               You don't have any question create
+          </div>
+          <div v-for="(question, index) in model.questions" :key="question.id">
+            <QuestionEditor 
+              :question="question"
+              :index="index"
+              @change="questionChange"
+              @addQuestion="addQuestion"
+              @deleteQuestion="deleteQuestion"
+            />
+          </div>
+          
+    </div>
+    
+            <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+          <TButton>
+            <SaveIcon class="w-5 h-5 mr-2" />
+            Save
+          </TButton>
+        </div>
 
     </div>
 </form>
@@ -134,10 +181,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { v4 as uuidv4 } from "uuid";
+import { computed, ref, watch } from "vue";
 import store from '../store';
 import { useRoute } from 'vue-router';
+import { SaveIcon, TrashIcon, ExternalLinkIcon } from '@heroicons/vue/solid'
 import PageComponent from '../components/PageComponent.vue'
+import TButton from "../components/core/TButton.vue";
+import QuestionEditor from '../components/editor/QuestionEditor.vue';
 
 const route = useRoute()
 
@@ -155,4 +206,35 @@ if(route.params.id) {
         (s) => s.id === parseInt(route.params.id)
     )
 }
+
+function addQuestion(index) {
+  const newQuestion = {
+    id: uuidv4(),
+    type: "text",
+    question: "",
+    description: null,
+    data: {},
+  };
+
+  model.value.questions.splice(index, 0, newQuestion);
+}
+
+function deleteQuestion(question) {
+  model.value.questions = model.value.questions.filter((q) => q !== question);
+}
+
+function questionChange(question) {
+  // Important to explicitelly assign question.data.options, because otherwise it is a Proxy object
+  // and it is lost in JSON.stringify()
+  if (question.data.options) {
+    question.data.options = [...question.data.options];
+  }
+  model.value.questions = model.value.questions.map((q) => {
+    if (q.id === question.id) {
+      return JSON.parse(JSON.stringify(question));
+    }
+    return q;
+  });
+}
+
 </script>
